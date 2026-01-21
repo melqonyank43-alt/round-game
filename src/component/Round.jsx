@@ -46,7 +46,11 @@ function Round() {
   useEffect(() => {
     if (!gameOver) return;
 
-    const audio = new Audio(score >= 20 ? "/public/11l-victory-1749704550711-358777.mp3" : "/public/verloren-89595.mp3");
+    const audio = new Audio(
+      score >= 20 
+        ? "/11l-victory-1749704550711-358777.mp3" 
+        : "/verloren-89595.mp3"
+    );
     audio.play();
   }, [gameOver, score]);
 
@@ -85,6 +89,7 @@ function Round() {
 }
 
 export default Round;
+
 
 
 
