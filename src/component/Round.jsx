@@ -5,16 +5,18 @@ function Round() {
   const [score, setScore] = useState(0);
   const [time, setTime] = useState(20);
   const [gameOver, setGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false); // նոր state, խաղը սկսվել է
 
   const startGame = () => {
     setScore(0);
     setTime(20);
     setRound(Array(9).fill(0));
     setGameOver(false);
+    setGameStarted(true); // խաղը սկսվեց → թույլատրվում է ձայն
   };
 
   useEffect(() => {
-    if (gameOver) return;
+    if (gameOver || !gameStarted) return;
 
     const interval = setInterval(() => {
       const x = Math.floor(Math.random() * 9);
@@ -39,56 +41,67 @@ function Round() {
       clearInterval(interval);
       clearInterval(timer);
     };
-  }, [gameOver]);
+  }, [gameOver, gameStarted]);
 
   const message = gameOver ? (score >= 20 ? "Winner 🎉" : "Game Over 💀") : null;
 
   useEffect(() => {
-    if (!gameOver) return;
+    if (!gameOver || !gameStarted) return;
 
     const audio = new Audio(
-      score >= 20 
-        ? "/11l-victory-1749704550711-358777.mp3" 
+      score >= 20
+        ? "/11l-victory-1749704550711-358777.mp3"
         : "/verloren-89595.mp3"
     );
-    audio.play();
-  }, [gameOver, score]);
+    audio.play().catch(err => console.log("Audio error:", err));
+  }, [gameOver, score, gameStarted]);
 
   return (
     <div>
-      <h2>Score: {score}</h2>
-      <h2>Time: {time}</h2>
-      {message && <h1>{message}</h1>}
-
-      {gameOver && (
+      {!gameStarted && (
         <button onClick={startGame}>
-          Restart
+          Start Game
         </button>
       )}
 
-      <div className="Header">
-        {round.map((klor, index) => (
-          <div
-            key={index}
-            className="circle"
-            onClick={() => {
-              if (!gameOver && klor === 1) {
-                setScore(s => s + 1);
-                const newRound = [...round];
-                newRound[index] = 0;
-                setRound(newRound);
-              }
-            }}
-          >
-            {klor === 1 && <img src="/orig.webp" alt="orig" />}
+      {gameStarted && (
+        <>
+          <h2>Score: {score}</h2>
+          <h2>Time: {time}</h2>
+          {message && <h1>{message}</h1>}
+
+          {gameOver && (
+            <button onClick={startGame}>
+              Restart
+            </button>
+          )}
+
+          <div className="Header">
+            {round.map((klor, index) => (
+              <div
+                key={index}
+                className="circle"
+                onClick={() => {
+                  if (!gameOver && klor === 1) {
+                    setScore(s => s + 1);
+                    const newRound = [...round];
+                    newRound[index] = 0;
+                    setRound(newRound);
+                  }
+                }}
+              >
+                {klor === 1 && <img src="/orig.webp" alt="orig" />}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }
 
 export default Round;
+
 
 
 
